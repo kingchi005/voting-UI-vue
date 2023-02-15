@@ -1,7 +1,8 @@
 <template>
   <v-sheet width="350" class="mx-auto pa-5">
+
     <v-form ref="form" @submit.prevent="handleSubmit">
-      <div class=" grey--text text-h5 font-weight-bold">{{ type == 'update_form' ? 'Update Aspirant' : 'Add an Aspirant'}}</div>
+      <div class=" grey--text text-h5 font-weight-bold">{{ updateForm ? 'Update Aspirant' : 'Add an Aspirant'}}</div>
       <v-alert class="mb-3 py-1" v-if="alert_msgs.length != 0" :type="alert_type" title="" variant="tonal" border="start" close-label="Close Alert">
         <div v-for="(item, i) in alert_msgs" :key="i">{{item}}</div>
       </v-alert>
@@ -10,17 +11,28 @@
       <v-text-field v-model="department" :rules="department_rules" label="Department"></v-text-field>
       <v-select v-model="office_id" :items="offices" item-title="name" item-value="id" label="Select office" persistent-hint return-object single-line></v-select>
       <v-file-input :rules="avatar_rules" accept="image/png, image/jpeg, image/jpg" placeholder="Pick an avatar" label="Avatar" @change="uploadImage" show-size></v-file-input>
-      <v-btn type="submit" block rounded="lg" color="primary">{{ type == 'update_form' ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
+      <v-btn type="submit" :disabled="isLoading" block rounded="lg" color="primary">{{ updateForm ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
     </v-form>
   </v-sheet>
 </template>
 <script>
 import { onMounted } from 'vue'
 export default {
-  props: ["type","init_first_name" ,"init_other_names","init_department","init_avatar","init_office_id"]
+  // props: ["type","first_name" ,"other_names","department","avatar","office_id"]
+  props:{
+    updateForm:{
+      type:Boolean
+    },
+    initial_form_data:{
+      type:Object
+    },
+    asp_update_id: String
+  }
   , data: () => ({
-    alert_msgs: []
+    isLoading: true
+    ,alert_msgs: []
       // alert_msgs: ['"department" is not allowed to be empty sokjhdf dont', ' "avatar" ijdhfs not allowed to be empty', "odhjfnhduhj"]
+    , alert_type: ''
     , alert_type: ''
     , first_name: ''
     , other_names: ''
@@ -41,7 +53,7 @@ export default {
       value => value ? true : 'You must enter a first name.'
     ]
     , avatar_rules: [
-      value => !value || !value.length || value[0].size < 150000 || 'Avatar size should be less than 150KB!'
+      value => !value || !value.length || value[0].size < 1000000 || 'Avatar size should be less than 1MB!'
     ]
   })
   , methods: {
@@ -58,7 +70,7 @@ export default {
           , avatar: this.avatar
         }
         const _this_ = this
-        if (this.type == "update_form") {
+        if (this.updateForm) {
           update_aspirant(_this_)
         }else{
           create_aspirant(_this_)
@@ -73,7 +85,7 @@ export default {
           })
           const result = await res.json()
           if (result.ok) {
-            _this.alert_msgs.append(result.msg)
+            _this.alert_msgs = [result.msg]
             _this.alert_type = "success"
             // console.log(result)
           } else {
@@ -84,26 +96,29 @@ export default {
             // console.log(result.msg)
           }
         }
-        function update_aspirant () {
-
-          console.log(req)
+        async function update_aspirant (_this) {
+          const res = await fetch("http://127.0.0.1:500/admin/update-aspirant/"+_this.asp_update_id, {
+            method: "PATCH"
+            , body: JSON.stringify(req)
+            , headers: {
+              "content-Type": "application/json"
+            }
+          })
+          const result = await res.json()
+          if (result.ok) {
+            _this.alert_msgs = [result.msg]
+            _this.alert_type = "success"
+            // console.log(result)
+          } else {
+            _this.alert_type = "error"
+            result.msg = result.msg.split(".")
+            // console.log(result.msg)
+            _this.alert_msgs = result.msg
+            // console.log(result.msg)
+          }
         }
       }
     }
-    // ,update_aspirant(){
-    //   this.alert_msgs = []
-    //   // console.log(this.$refs.form)
-    //   // if (!this.$refs.form.validate()) return false
-    //   if (this.$refs.form.validate()) {
-    //     const req = {
-    //       first_name: this.first_name
-    //       , other_names: this.other_names
-    //       , department: this.department
-    //       , office_id: this.office_id.id
-    //       , avatar: this.avatar
-    //     }
-    //   }
-    // }
     , convertBase64(file) {
       return new Promise((resolve, reject) => {
         const fileReader = new FileReader()
@@ -127,20 +142,22 @@ export default {
   }
   , async mounted() {
     // any JavaScript Code
+    this.first_name = this.updateForm ? this.initial_form_data.first_name : ''
+    this.other_names = this.updateForm ? this.initial_form_data.other_names : ''
+    this.department = this.updateForm ? this.initial_form_data.department : ''
+    this.office_id = this.updateForm ? this.initial_form_data.office_id : this.office_id
+    // this.avatar = this.type == "updateForm" ? this.avatar : ''
+    // console.log(this.initial_form_data)
+
     const res = await fetch("http://127.0.0.1:500/admin/fetch-office/")
     const result = await res.json()
-    if (result.ok) {
+    if (result?.ok) {
       this.offices = result.offices
     }
-    this.first_name = this.type == "update_form" ? this.init_first_name : ''
-    this.other_names = this.type == "update_form" ? this.init_other_names : ''
-    this.department = this.type == "update_form" ? this.init_department : ''
-    this.office_id = this.type == "update_form" ? this.init_office_id : this.office_id
-    // this.avatar = this.type == "update_form" ? this.init_avatar : ''
-    // console.log(this.alert_msgs)
+
   }
   , computed() {
-    console.log(this.type)
+    // console.log(this.type)
     // this.first_name = this.initial_form_data || ''
     // this.alert_msgs = this.alert_msgs != "" ? "this is it" : ""
   }
