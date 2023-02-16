@@ -8,7 +8,7 @@
       </v-alert>
 
       <v-text-field v-model="name" :rules="name_rules" label="First name"></v-text-field>
-      <v-btn type="submit" :disabled="isLoading" block rounded="lg" color="primary">{{ updateForm ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
+      <v-btn type="submit" :loading="isLoading" :disabled="isLoading" block rounded="lg" color="primary">{{ updateForm ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
     </v-form>
   </v-sheet>
 </template>
@@ -53,50 +53,66 @@ export default {
           create_office(_this_)
         }
         async function create_office(_this) {
-          const res = await fetch("http://127.0.0.1:500/admin/create-office", {
-            method: "POST"
-            , body: JSON.stringify(req)
-            , headers: {
-              "content-Type": "application/json"
+
+          try {
+            const res = await fetch("http://127.0.0.1:500/admin/create-office", {
+              method: "POST"
+              , body: JSON.stringify(req)
+              , headers: {
+                "content-Type": "application/json"
+              }
+            })
+            const result = await res.json()
+            if (result.ok) {
+            	_this.isLoading = false
+              _this.alert_msgs = [result.msg]
+              _this.alert_type = "success"
+              // console.log(result)
+            } else {
+            	_this.isLoading = false
+              _this.alert_type = "error"
+              result.msg = result.msg.split(".")
+              // console.log(result.msg)
+              _this.alert_msgs = result.msg
+              // console.log(result.msg)
             }
-          })
-          const result = await res.json()
-          if (result.ok) {
-          	_this.isLoading = false
-            _this.alert_msgs = [result.msg]
-            _this.alert_type = "success"
-            // console.log(result)
-          } else {
-          	_this.isLoading = false
-            _this.alert_type = "error"
-            result.msg = result.msg.split(".")
-            // console.log(result.msg)
-            _this.alert_msgs = result.msg
-            // console.log(result.msg)
+          } catch(e) {
+            _this.isLoading = false
+            _this.alert_type = "warning"
+            _this.alert_msgs = [e.message]
+            console.log("error:",e.message);
           }
         }
         async function update_office (_this) {
-        	const res = await fetch("http://127.0.0.1:500/admin/update-office/"+_this.office_update_id, {
-        	  method: "PATCH"
-        	  , body: JSON.stringify(req)
-        	  , headers: {
-        	    "content-Type": "application/json"
-        	  }
-        	})
-        	const result = await res.json()
-        	if (result.ok) {
-        		_this.isLoading = false
-        	  _this.alert_msgs = [result.msg]
-        	  _this.alert_type = "success"
-        	  // console.log(result)
-        	} else {
-        		_this.isLoading = false
-        	  _this.alert_type = "error"
-        	  result.msg = result.msg.split(".")
-        	  // console.log(result.msg)
-        	  _this.alert_msgs = result.msg
-        	  // console.log(result.msg)
-        	}
+          try {
+
+          	const res = await fetch("http://127.0.0.1:500/admin/update-office/"+_this.office_update_id, {
+          	  method: "PATCH"
+          	  , body: JSON.stringify(req)
+          	  , headers: {
+          	    "content-Type": "application/json"
+          	  }
+          	})
+          	const result = await res.json()
+          	if (result.ok) {
+          		_this.isLoading = false
+          	  _this.alert_msgs = [result.msg]
+          	  _this.alert_type = "success"
+          	  // console.log(result)
+          	} else {
+          		_this.isLoading = false
+          	  _this.alert_type = "error"
+          	  result.msg = result.msg.split(".")
+          	  // console.log(result.msg)
+          	  _this.alert_msgs = result.msg
+          	  // console.log(result.msg)
+          	}
+          } catch(e) {
+            _this.isLoading = false
+            _this.alert_type = "warning"
+            _this.alert_msgs = [e.message]
+            console.log("error:",e.message);
+          }
         }
       }
     }

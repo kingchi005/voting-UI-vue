@@ -11,7 +11,7 @@
       <v-text-field v-model="department" :rules="department_rules" label="Department"></v-text-field>
       <v-select v-model="office_id" :items="offices" item-title="name" item-value="id" label="Select office" persistent-hint return-object single-line></v-select>
       <v-file-input :rules="avatar_rules" accept="image/png, image/jpeg, image/jpg" placeholder="Pick an avatar" label="Avatar" @change="uploadImage" show-size></v-file-input>
-      <v-btn type="submit" :disabled="isLoading" block rounded="lg" color="primary">{{ updateForm ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
+      <v-btn type="submit" :loading="isLoading" :disabled="isLoading" block rounded="lg" color="primary">{{ updateForm ? 'Update Aspirant' : 'Create Aspirant'}}</v-btn>
     </v-form>
   </v-sheet>
 </template>
