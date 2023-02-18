@@ -1,13 +1,14 @@
 <template>
   <main>
-
-    <template> Loading... </template>
-    <OfficeForm />
+    <div class="about">
+      <h1>This is an home page</h1>
+    </div>
+<!--     <OfficeForm />
     <OfficeForm updateForm :init_office_name="init_office_name" :office_update_id="office_update_id" />
     
-<!--     <AspirantForm />
-    <AspirantForm updateForm :initial_form_data="initial_form_data" :asp_update_id="asp_update_id" /> -->
-  </main>
+    <AspirantForm />
+    <AspirantForm updateForm :initial_form_data="initial_form_data" :asp_update_id="asp_update_id" />
+ -->  </main>
 </template>
 <script>
 import AspirantForm from '../components/AspirantForm.vue'

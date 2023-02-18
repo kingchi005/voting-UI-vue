@@ -2,7 +2,7 @@
   <v-sheet width="350" class="mx-auto pa-5">
 
     <v-form ref="form" @submit.prevent="handleSubmit">
-      <div class=" grey--text text-h5 font-weight-bold">{{ updateForm ? 'Update Aspirant' : 'Add an Aspirant'}}</div>
+      <div class=" grey--text text-h5 font-weight-bold mb-3 text-uppercase">{{ updateForm ? 'Update Aspirant' : 'Add an Aspirant'}}</div>
       <v-alert class="mb-3 py-1" v-if="alert_msgs.length != 0" :type="alert_type" title="" variant="tonal" border="start" close-label="Close Alert">
         <div v-for="(item, i) in alert_msgs" :key="i">{{item}}</div>
       </v-alert>
@@ -29,7 +29,7 @@ export default {
     asp_update_id: String
   }
   , data: () => ({
-    isLoading: true
+    isLoading: false
     ,alert_msgs: []
       // alert_msgs: ['"department" is not allowed to be empty sokjhdf dont', ' "avatar" ijdhfs not allowed to be empty', "odhjfnhduhj"]
     , alert_type: ''
@@ -58,6 +58,7 @@ export default {
   })
   , methods: {
     async handleSubmit(e) {
+      this.isLoading = true
       this.alert_msgs = []
       // console.log(this.$refs.form)
       // if (!this.$refs.form.validate()) return false
@@ -76,45 +77,59 @@ export default {
           create_aspirant(_this_)
         }
         async function create_aspirant(_this) {
-          const res = await fetch("http://127.0.0.1:500/admin/create-aspirant", {
-            method: "POST"
-            , body: JSON.stringify(req)
-            , headers: {
-              "content-Type": "application/json"
+          try {
+            const res = await fetch("http://127.0.0.1:500/admin/create-aspirant", {
+              method: "POST"
+              , body: JSON.stringify(req)
+              , headers: {
+                "content-Type": "application/json"
+              }
+            })
+            const result = await res.json()
+            if (result.ok) {
+              _this.alert_msgs = [result.msg]
+              _this.alert_type = "success"
+              // console.log(result)
+            } else {
+              _this.alert_type = "error"
+              result.msg = result.msg.split(".")
+              // console.log(result.msg)
+              _this.alert_msgs = result.msg
+              // console.log(result.msg)
             }
-          })
-          const result = await res.json()
-          if (result.ok) {
-            _this.alert_msgs = [result.msg]
-            _this.alert_type = "success"
-            // console.log(result)
-          } else {
-            _this.alert_type = "error"
-            result.msg = result.msg.split(".")
-            // console.log(result.msg)
-            _this.alert_msgs = result.msg
-            // console.log(result.msg)
+          } catch(e) {
+            _this.isLoading = false
+            _this.alert_type = "warning"
+            _this.alert_msgs = [e.message]
+            console.log("error:",e.message);
           }
         }
         async function update_aspirant (_this) {
-          const res = await fetch("http://127.0.0.1:500/admin/update-aspirant/"+_this.asp_update_id, {
-            method: "PATCH"
-            , body: JSON.stringify(req)
-            , headers: {
-              "content-Type": "application/json"
+          try {
+            const res = await fetch("http://127.0.0.1:500/admin/update-aspirant/"+_this.asp_update_id, {
+              method: "PATCH"
+              , body: JSON.stringify(req)
+              , headers: {
+                "content-Type": "application/json"
+              }
+            })
+            const result = await res.json()
+            if (result.ok) {
+              _this.alert_msgs = [result.msg]
+              _this.alert_type = "success"
+              // console.log(result)
+            } else {
+              _this.alert_type = "error"
+              result.msg = result.msg.split(".")
+              // console.log(result.msg)
+              _this.alert_msgs = result.msg
+              // console.log(result.msg)
             }
-          })
-          const result = await res.json()
-          if (result.ok) {
-            _this.alert_msgs = [result.msg]
-            _this.alert_type = "success"
-            // console.log(result)
-          } else {
-            _this.alert_type = "error"
-            result.msg = result.msg.split(".")
-            // console.log(result.msg)
-            _this.alert_msgs = result.msg
-            // console.log(result.msg)
+          } catch(e) {
+            _this.isLoading = false
+            _this.alert_type = "warning"
+            _this.alert_msgs = [e.message]
+            console.log("error:",e.message);
           }
         }
       }
@@ -148,11 +163,17 @@ export default {
     this.office_id = this.updateForm ? this.initial_form_data.office_id : this.office_id
     // this.avatar = this.type == "updateForm" ? this.avatar : ''
     // console.log(this.initial_form_data)
-
-    const res = await fetch("http://127.0.0.1:500/admin/fetch-office/")
-    const result = await res.json()
-    if (result?.ok) {
-      this.offices = result.offices
+    try {
+      const res = await fetch("http://127.0.0.1:500/admin/fetch-office/")
+      const result = await res.json()
+      if (result?.ok) {
+        this.offices = result.offices
+      }
+    } catch(e) {
+      // _this.isLoading = false
+      this.alert_type = "warning"
+      // this.alert_msgs = [e.message]
+      // console.error("error:",e.message);
     }
 
   }
