@@ -45,10 +45,10 @@ export default {
     , office_update_id: String
     , snackbar: {
       type: Object
+    },
+    offices:{
+      type:Object  
     }
-    // office_dialog:{
-    //   type:Boolean  
-    // }
   }
   , data: () => ({
     isLoading: false
@@ -56,7 +56,7 @@ export default {
     , alert_msgs: []
       // alert_msgs: ['"department" is not allowed to be empty sokjhdf dont', ' "avatar" ijdhfs not allowed to be empty', "odhjfnhduhj"]
     , alert_type: ''
-    , name: () => this.updateForm ? 'yes' : 'no'
+    , name: ''
     , name_rules: [
       value => value ? true : 'First name is required'
     ]
@@ -93,6 +93,8 @@ export default {
               _this.office_dialog = false
               _this.snackbar['show'] = true
               _this.snackbar['text'] = result.msg
+              _this.name = ''
+              _this.offices.push(result.office)
               // _this.alert_type = "success"
               // console.log(result)
             } else {
@@ -126,6 +128,11 @@ export default {
               _this.snackbar['show'] = true
               _this.snackbar['text'] = result.msg
               _this.office_dialog = false
+              _this.offices.forEach( function(o, i) {
+                if (o._id === _this.office_update_id) {
+                  o.name = req.name
+                }
+              });
               // _this.alert_msgs = [result.msg]
               // _this.alert_type = "success"
               // console.log(result)
@@ -151,7 +158,7 @@ export default {
     // any JavaScript Code
     this.name = this.updateForm ? this.init_office_name : ''
     // this.avatar = this.type == "updateForm" ? this.avatar : ''
-    console.log(this.offices)
+    // console.log(this.offices)
   }
   , computed: {
     edited_name() {
