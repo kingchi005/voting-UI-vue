@@ -19,6 +19,11 @@ const router = createRouter({
       , name: 'Admin Operation'
       , component: () => import('../views/AdminOperation.vue')
     }
+    , {
+      path: '/election-stat'
+      , name: 'Election Statistics'
+      , component: () => import('../views/ElectionStats.vue')
+    }
   ]
 })
 

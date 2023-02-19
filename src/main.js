@@ -8,23 +8,21 @@ import router from './router'
 
 // Vuetify
 import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import { mdi } from 'vuetify/iconsets/mdi'
 // console.log(md,fa)
 
 const vuetify = createVuetify({
   components: { ...components, VDataTable }
   , directives,
   icons: {
-     defaultSet: 'mdi',
-     aliases,
-     sets: {
-       mdi,
-     }
-   },
+      defaultSet: 'mdi', // This is already the default value - only for display purposes
+    },
  })
 
 // createApp(App).use(vuetify).mount('#app')

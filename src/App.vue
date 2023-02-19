@@ -2,7 +2,7 @@
   <v-app :theme="theme">
     <v-app-bar>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="text-uppercase"> Voting System {{drawer}} </v-toolbar-title>
+      <v-toolbar-title class="text-uppercase"> Voting System </v-toolbar-title>
       <!-- <v-spacer></v-spacer> -->
       <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="toggleTheme">Toggle Theme</v-btn>
     </v-app-bar>
@@ -19,9 +19,11 @@
 // import { RouterLink } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
 import AlertSuccuss from '@/components/AlertSuccuss.vue'
+import { Icon } from '@iconify/vue';
+
 
 export default {
-  components: { Navbar,AlertSuccuss }
+  components: { Navbar,AlertSuccuss,Icon }
   , data: () => ({
     drawer: false
     , theme: "light",
