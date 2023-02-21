@@ -88,7 +88,7 @@
           <th class="text-left">
             Office
           </th>
-          <th class="text-right" min-width="500px">
+          <th class="text-right">
             Action
           </th>
         </tr>

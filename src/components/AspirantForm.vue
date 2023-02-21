@@ -22,7 +22,7 @@
           <v-text-field v-model="first_name" :rules="first_name_rules" label="First name"></v-text-field>
           <v-text-field v-model="other_names" :rules="other_names_rules" label="Other names"></v-text-field>
           <v-text-field v-model="department" :rules="department_rules" label="Department"></v-text-field>
-          <v-select v-model="office" :items="offices" item-title="name" :rules="select_rules" item-value="id" label="Select office"  return-object ></v-select>
+          <v-select v-model="office" :items="offices" item-title="name" item-value="id" label="Select office"  return-object ></v-select>
           <v-file-input :rules="avatar_rules" accept="image/png, image/jpeg, image/jpg" placeholder="Pick an avatar" label="Avatar" @change="uploadImage" show-size></v-file-input>
           <v-card-actions>
             <v-spacer></v-spacer>
