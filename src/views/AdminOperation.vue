@@ -8,7 +8,7 @@
     flex-wrap: wrap;
     flex-direction: column;
    -->
-  <v-switch class="d-flex ms-5 me-0 flex-wrap align-end " @click.prevent="toggle_election" v-model="toggleElection" hide-details inset color="success" :label="`Election: ${toggleElection ? 'Ongoing' : 'Not started'}`">
+  <v-switch class="d-flex ms-2 me-0 flex-wrap align-end " @click.prevent="toggle_election" v-model="toggleElection" hide-details inset color="success" :label="`Election: ${toggleElection ? 'Ongoing' : 'Not started'}`">
      
     <template v-if="toggleElection" v-slot:append>
       <div class="badge-dot">
@@ -48,7 +48,13 @@
           <td class="text-right">
             <OfficeForm :offices="offices" updateForm :snackbar="snackbar" :init_office_name="item.name" :office_update_id="item._id" />
             <!-- <v-btn size="x-small" color="primary mx-3" @click="edit_office(item)"> Edit </v-btn> -->
-            <v-btn size="x-small" color="red" @click="handle_delete_office(item)" class="ms-5"> delete </v-btn>
+            <!-- <v-btn size="x-small" color="red" @click="handle_delete_office(item)" class="ms-5"> delete </v-btn> -->
+            <v-icon
+              color="red" @click="handle_delete_office(item)" class="ms-2"
+              size="small"
+            >
+              mdi-trash-can-outline
+            </v-icon>
           </td>
         </tr>
       </tbody>
@@ -82,7 +88,7 @@
           <th class="text-left">
             Office
           </th>
-          <th class="text-right">
+          <th class="text-right" min-width="500px">
             Action
           </th>
         </tr>
@@ -99,7 +105,14 @@
           <td class="text-right">
             <AspirantForm :offices="offices" :aspirants="aspirants" updateForm :snackbar="snackbar" :initial_asp_form_data="item" :asp_update_id="item._id" />
             <!-- <v-btn size="x-small" color="primary mx-3" @click="edit_office(item)"> Edit </v-btn> -->
-            <v-btn size="x-small" color="red" @click="handle_delete_aspirant(item)" class="ms-5"> remove </v-btn>
+            <!-- <v-btn size="x-small" color="red" @click="handle_delete_aspirant(item)" class="ms-5"> remove </v-btn> -->
+            <v-icon
+              color="red" @click="handle_delete_aspirant(item)" class="ms-2"
+              size="small"
+            >
+              mdi-trash-can-outline
+            </v-icon>
+
           </td>
         </tr>
       </tbody>

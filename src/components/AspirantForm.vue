@@ -2,7 +2,14 @@
 
   <v-dialog v-model="aspirant_dialog" max-width="600px">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="updateForm" color="primary" size="x-small" v-bind="props"> Edit </v-btn>
+      <!-- <v-btn v-if="updateForm" color="primary" size="x-small" v-bind="props"> Edit </v-btn> -->
+      <v-icon v-if="updateForm"
+        size="small"
+        class="me-2"
+        v-bind="props"
+      >
+        mdi-square-edit-outline
+      </v-icon>
       <v-btn v-else color="primary" v-bind="props"> Create Aspirant </v-btn>
     </template>
     <v-card>
@@ -15,7 +22,7 @@
           <v-text-field v-model="first_name" :rules="first_name_rules" label="First name"></v-text-field>
           <v-text-field v-model="other_names" :rules="other_names_rules" label="Other names"></v-text-field>
           <v-text-field v-model="department" :rules="department_rules" label="Department"></v-text-field>
-          <v-select v-model="office" :items="offices" item-title="name" item-value="id" label="Select office" persistent-hint return-object single-line></v-select>
+          <v-select v-model="office" :items="offices" item-title="name" :rules="select_rules" item-value="id" label="Select office"  return-object ></v-select>
           <v-file-input :rules="avatar_rules" accept="image/png, image/jpeg, image/jpg" placeholder="Pick an avatar" label="Avatar" @change="uploadImage" show-size></v-file-input>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -76,7 +83,7 @@ export default {
       value => value ? true : 'Department is required.'
     ]
     , select_rules: [
-      value => value ? true : 'You must enter a first name.'
+      value => value ? true : 'You must enter an  office name.'
     ]
     , avatar_rules: [
       value => !value || !value.length || value[0].size < 1000000 || 'Avatar size should be less than 1MB!'
@@ -88,7 +95,9 @@ export default {
       this.alert_msgs = []
       // console.log(this.$refs.form)
       // if (!this.$refs.form.validate()) return false
-      if (this.$refs.form.validate()) {
+      const { valid } = await this.$refs.form.validate()
+      if (!valid) return this.isLoading = false
+      if (valid) {
         const req = {
           first_name: this.first_name
           , other_names: this.other_names

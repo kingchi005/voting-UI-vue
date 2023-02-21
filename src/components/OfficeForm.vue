@@ -1,7 +1,15 @@
 <template>
   <v-dialog v-model="office_dialog" max-width="600px">
     <template v-slot:activator="{ props }">
-      <v-btn v-if="updateForm" color="primary" size="x-small" v-bind="props"> Edit </v-btn>
+      <!-- <v-btn v-if="updateForm" color="primary" size="x-small" v-bind="props"> Edit </v-btn> -->
+      <v-icon v-if="updateForm"
+        size="small"
+        class="me-2"
+        v-bind="props"
+      >
+        mdi-square-edit-outline
+      </v-icon>
+
       <v-btn v-else color="primary" v-bind="props"> Create Office </v-btn>
     </template>
     <v-card>
@@ -67,7 +75,9 @@ export default {
       this.alert_msgs = []
       // console.log(this.$refs.form)
       // if (!this.$refs.form.validate()) return false
-      if (this.$refs.form.validate()) {
+      const { valid } = await this.$refs.form.validate()
+      if (!valid) return this.isLoading = false
+      if (valid) {
         const req = {
           name: this.name
         }

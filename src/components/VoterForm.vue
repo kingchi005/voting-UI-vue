@@ -8,12 +8,13 @@
         <!-- <h2>add office  now</h2> -->
         <v-form ref="form" @submit.prevent="handleSubmit">
           <div class=" grey--text text-h5 font-weight-bold mb-3 text-uppercase">Add multiple voters</div>
-          <div>Enter at least 5 Reg numbers adding ',' after each Reg no to append to the list</div>
-          <div>You can also paste at least 5 Reg numbers with ',' after each Reg no and click fill list</div>
+          <small class="">Enter at least 5 Reg numbers adding ',' after <br>each Reg no to append to the list <br>
+          You can also paste at least 5 Reg numbers <br>adding a comma ',' after each Reg no and click fill list</small>
           <v-alert class="mb-3 py-1" v-if="alert_msgs.length != 0" :type="alert_type" title="" variant="tonal" border="start" close-label="Close Alert">
             <div v-for="(item, i) in alert_msgs" :key="i">{{item}}</div>
           </v-alert>
           <v-text-field v-model="tempVoterRegNo" @keyup.alt="addVoter" label="Reg numbers"></v-text-field>
+          <v-btn color="info" size="x-small"> fill </v-btn>
           <div>Voters: {{reg_nos}}</div>
           <!-- <div v-for="no in reg_nos" :key="reg_nos"> {{no}} </div> -->
           <v-card-actions>
