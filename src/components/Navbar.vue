@@ -18,9 +18,9 @@ export default {
   data: () => ({
     drawer: false
     , links: [
-      { icon: "mdi-home", text: 'Dashboard', route: '/' }
+      // { icon: "mdi-home", text: 'Dashboard', route: '/' }
        // { icon: "mdi-home", text: 'About', route: '/about' }
-      , { icon: "mdi-view-dashboard", text: 'Admin Operation', route: '/operation' }
+      { icon: "mdi-view-dashboard", text: 'Admin Operation', route: '/operation' }
       , { icon: "mdi-sign-real-estate", text: 'Statistics', route: '/election-stat' }
       // , { icon: "folder", text: 'About', route: '/about' }
       // ,{icon:"dashboard",text:'Dashboard', route:'/'}

@@ -1,5 +1,26 @@
 <template>
   <AlertSuccuss :snackbar="snackbar" />
+  <ConfirmDialogue @resolved="handleResolved" :confirm_dialog="confirm_dialog" :test_dialog="test_dialog" />
+  <!-- 
+    display: flex;
+    grid-area: control;
+    align-content: flex-end;
+    flex-wrap: wrap;
+    flex-direction: column;
+   -->
+  <v-switch class="d-flex ms-5 me-0 flex-wrap align-end " @click.prevent="toggle_election" v-model="toggleElection" hide-details inset color="success" :label="`Election: ${toggleElection ? 'Ongoing' : 'Not started'}`">
+     
+    <template v-if="toggleElection" v-slot:append>
+      <div class="badge-dot">
+        
+      <v-badge
+        color="success"
+        inline
+        dot
+      ></v-badge>
+      </div>
+    </template>
+  </v-switch>
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
       <v-row>
@@ -27,14 +48,12 @@
           <td class="text-right">
             <OfficeForm :offices="offices" updateForm :snackbar="snackbar" :init_office_name="item.name" :office_update_id="item._id" />
             <!-- <v-btn size="x-small" color="primary mx-3" @click="edit_office(item)"> Edit </v-btn> -->
-            <v-btn size="x-small" color="error" @click="delete_office(item)" class="ms-5"> delete </v-btn>
+            <v-btn size="x-small" color="red" @click="handle_delete_office(item)" class="ms-5"> delete </v-btn>
           </td>
         </tr>
       </tbody>
     </v-table>
   </v-card>
-
-
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
       <v-row class="text-uppercase">
@@ -49,19 +68,19 @@
       <thead>
         <tr>
           <th class="text-left">
-	          Avatar
+            Avatar
           </th>
           <th class="text-left">
-	          First Name
+            First Name
           </th>
           <th class="text-left">
-	          Other Names
+            Other Names
           </th>
           <th class="text-left">
-	          Department
+            Department
           </th>
           <th class="text-left">
-	          Office
+            Office
           </th>
           <th class="text-right">
             Action
@@ -70,7 +89,9 @@
       </thead>
       <tbody>
         <tr v-for="item in aspirants" :key="item.first_name">
-          <td><v-avatar :image="item.avatar" :alt="item.first_name" size="40"></v-avatar></td>
+          <td>
+            <v-avatar :image="item.avatar" :alt="item.first_name" size="40"></v-avatar>
+          </td>
           <td>{{ item.first_name }}</td>
           <td>{{ item.other_names }}</td>
           <td>{{ item.department }}</td>
@@ -78,13 +99,12 @@
           <td class="text-right">
             <AspirantForm :offices="offices" :aspirants="aspirants" updateForm :snackbar="snackbar" :initial_asp_form_data="item" :asp_update_id="item._id" />
             <!-- <v-btn size="x-small" color="primary mx-3" @click="edit_office(item)"> Edit </v-btn> -->
-            <v-btn size="x-small" color="error" @click="delete_aspirant(item)" class="ms-5"> delete </v-btn>
+            <v-btn size="x-small" color="red" @click="handle_delete_aspirant(item)" class="ms-5"> remove </v-btn>
           </td>
         </tr>
       </tbody>
     </v-table>
   </v-card>
-
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
       <v-row class="text-uppercase">
@@ -95,15 +115,8 @@
       <v-row>
       </v-row>
     </v-card-title>
-    <v-data-table
-      v-model:items-per-page="itemsPerPage"
-      :headers="voter_headers"
-      :items="voters"
-      item-value="reg_no"
-      class="elevation-1"
-    ></v-data-table>
+    <v-data-table v-model:items-per-page="itemsPerPage" :headers="voter_headers" :items="voters" item-value="reg_no" class="elevation-1"></v-data-table>
   </v-card>
-
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
       <v-row class="text-uppercase">
@@ -114,14 +127,7 @@
       <v-row>
       </v-row>
     </v-card-title>
-    <v-data-table
-
-      v-model:items-per-page="itemsPerPage"
-      :headers="token_headers"
-      :items="tokens"
-      item-value=""
-      class="elevation-1"
-    ></v-data-table>
+    <v-data-table v-model:items-per-page="itemsPerPage" :headers="token_headers" :items="tokens" item-value="" class="elevation-1"></v-data-table>
   </v-card>
 </template>
 <script>
@@ -129,53 +135,67 @@ import AspirantForm from '../components/AspirantForm.vue'
 import OfficeForm from '../components/OfficeForm.vue'
 import VoterForm from '../components/VoterForm.vue'
 import AlertSuccuss from '../components/AlertSuccuss.vue'
+import ConfirmDialogue from '../components/ConfirmDialogue.vue'
 
 
 export default {
-  components: { OfficeForm, AlertSuccuss, AspirantForm, VoterForm }
+  components: { OfficeForm, AlertSuccuss, AspirantForm, VoterForm, ConfirmDialogue },
+  props:[]
   , data() {
     return {
       search: ''
+      , toggleElection: true
       , snackbar: {
         show: false
         , text: 'sample bar'
+      }
+      , test_dialog: 'this is text dialog'
+      , confirm_dialog: {
+        show: false
+        , title: 'sample title'
+        , text: 'sample bar'
+        , btn_resolve_color:'green-darken-1'
+        , btn_resolve_text:'Ok'
+        , btn_reject_color:'red'
+        , btn_reject_text:'Cancel'
+        , cb_arg:''
       }
       , update_office_dialog: false
       , create_office_dialog: false
       , update_aspirant_dialog: false
       , create_aspirant_dialog: false
-      , init_office_: { "id": 1, "_id": "039174dd9b734d714", "name": "This is it", "deleted_flag": false, "createdAt": "2023-02-06T20:09:58.000Z", "updatedAt": "2023-02-16T14:51:54.000Z" },
-      initial_asp_form_data:{},
-      itemsPerPage: 5
+      , init_office_: { "id": 1, "_id": "039174dd9b734d714", "name": "This is it", "deleted_flag": false, "createdAt": "2023-02-06T20:09:58.000Z", "updatedAt": "2023-02-16T14:51:54.000Z" }
+      , initial_asp_form_data: {}
+      , itemsPerPage: 5
       , token_headers: [{
           align: 'start'
           , key: '_token'
           , sortable: true
-          , title: 'Available Tokens'          
-        },
-        { key: 'isUsed', title: 'Availability' },
-      ],
-      tokens:[
-        {"id": 4, "_token": "ki5864p5p", "isUsed": "available", "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
-        },
-        {"id": 5, "_token": "aarbyeobi", "isUsed": 'available', "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
-        },
-        {"id": 6, "_token": "e30walw4q", "isUsed": 'not available', "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
+          , title: 'Available Tokens'
         }
+        , { key: 'isUsed', title: 'Availability' }
+      , ]
+      , tokens: [
+        // {"id": 4, "_token": "ki5864p5p", "isUsed": "available", "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
+        // },
+        // {"id": 5, "_token": "aarbyeobi", "isUsed": 'available', "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
+        // },
+        // {"id": 6, "_token": "e30walw4q", "isUsed": 'not available', "createdAt": "2023-02-04T13:03:43.000Z", "updatedAt": "2023-02-04T13:03:43.000Z"
+        // }
       ]
       , voter_headers: [{
           align: 'start'
           , key: 'reg_no'
           , sortable: true
           , title: 'Voter Reg No'
-        , },
-        { key: 'voted', title: 'Status' },
+        , }
+        , { key: 'voted', title: 'Status' },
         // { key: 'fat', title: 'Fat (g)' },
         // { key: 'carbs', title: 'Carbs (g)' },
         // { key: 'protein', title: 'Protein (g)' },
         // { key: 'iron', title: 'Iron (%)' },
-      ],
-      voters:[
+      ]
+      , voters: [
         // {"reg_no": 20207444841, "id": 1, "_id": "0c53d0a7c2e3ef8f7", "voted": true, "logged_in": false, "createdAt": "2023-02-04T12:45:31.000Z", "updatedAt": "2023-02-04T12:45:31.000Z"},
         // {"reg_no": 20200087727, "id": 2, "_id": "0a9012a81aeb628df", "voted": false, "logged_in": true, "createdAt": "2023-02-04T12:45:31.000Z", "updatedAt": "2023-02-07T15:00:47.000Z"},
         // {"reg_no": 20200087727, "id": 2, "_id": "0a9012a81aeb628df", "voted": true, "logged_in": true, "createdAt": "2023-02-04T12:45:31.000Z", "updatedAt": "2023-02-07T15:00:47.000Z"},
@@ -191,19 +211,40 @@ export default {
                 , { "id": 10, "_id": "0bb72d669ab640f98", "name": "test office", "deleted_flag": false, "createdAt": "2023-02-15T15:15:15.000Z", "updatedAt": "2023-02-15T15:15:15.000Z" }
                 , { "id": 11, "_id": "043e4eb2fae6aab62", "name": "kingchi office", "deleted_flag": false, "createdAt": "2023-02-15T15:26:23.000Z", "updatedAt": "2023-02-15T15:26:23.000Z" }
         */
-      ],
-      aspirants:[
-/*        {"id": 3, "_id": "02704baf09338f8e5", "first_name": "Amanda", "other_names": "baby", "department": "Beauty department", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:11:47.000Z", "updatedAt": "2023-02-15T16:15:57.000Z", "office_id": 11 },
-        {"id": 11, "_id": "0b0f0ed25c455b79b", "first_name": "Kingi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:24:39.000Z", "updatedAt": "2023-02-06T20:24:39.000Z", "office_id": 1 },
-        {"id": 13, "_id": "05452b37d4ecd1e58", "first_name": "Okay", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:25:17.000Z", "updatedAt": "2023-02-06T20:25:17.000Z", "office_id": 3 },
-        {"id": 14, "_id": "0680b43f8f536deb0", "first_name": "Kingchi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T11:15:37.000Z", "updatedAt": "2023-02-07T11:15:37.000Z", "office_id": 1 },
-        {"id": 22, "_id": "049edc9d31cffb09b", "first_name": "Kingch", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:42:13.000Z", "updatedAt": "2023-02-07T16:42:13.000Z", "office_id": 1 },
-        {"id": 25, "_id": "0e33a064b718eac3f", "first_name": "Kingc", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:44:48.000Z", "updatedAt": "2023-02-07T16:44:48.000Z", "office_id": 1 },
-        {"id": 28, "_id": "031afe41fb28fb89b", "first_name": "Kin", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:45:23.000Z", "updatedAt": "2023-02-07T16:45:23.000Z", "office_id": 1 },
-*/      ]
+      ]
+      , aspirants: [
+        /*        {"id": 3, "_id": "02704baf09338f8e5", "first_name": "Amanda", "other_names": "baby", "department": "Beauty department", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:11:47.000Z", "updatedAt": "2023-02-15T16:15:57.000Z", "office_id": 11 },
+                {"id": 11, "_id": "0b0f0ed25c455b79b", "first_name": "Kingi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:24:39.000Z", "updatedAt": "2023-02-06T20:24:39.000Z", "office_id": 1 },
+                {"id": 13, "_id": "05452b37d4ecd1e58", "first_name": "Okay", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:25:17.000Z", "updatedAt": "2023-02-06T20:25:17.000Z", "office_id": 3 },
+                {"id": 14, "_id": "0680b43f8f536deb0", "first_name": "Kingchi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T11:15:37.000Z", "updatedAt": "2023-02-07T11:15:37.000Z", "office_id": 1 },
+                {"id": 22, "_id": "049edc9d31cffb09b", "first_name": "Kingch", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:42:13.000Z", "updatedAt": "2023-02-07T16:42:13.000Z", "office_id": 1 },
+                {"id": 25, "_id": "0e33a064b718eac3f", "first_name": "Kingc", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:44:48.000Z", "updatedAt": "2023-02-07T16:44:48.000Z", "office_id": 1 },
+                {"id": 28, "_id": "031afe41fb28fb89b", "first_name": "Kin", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:45:23.000Z", "updatedAt": "2023-02-07T16:45:23.000Z", "office_id": 1 },
+        */
+      ]
     }
   }
   , methods: {
+    handle_delete_office(offc){
+      this.confirm_dialog.show = true
+      this.confirm_dialog.title = 'Confirm Delete'
+      this.confirm_dialog.text = `You are about to delete the office of the ${offc.name}`
+      this.confirm_dialog.btn_reject_color = 'green-darken-1'
+      this.confirm_dialog.btn_resolve_color = 'red'
+      this.confirm_dialog.btn_resolve_text = 'delete'
+      this.confirm_dialog.cb = this.delete_office
+      this.confirm_dialog.cb_arg = offc
+    },
+    handle_delete_aspirant(asp){
+      this.confirm_dialog.show = true
+      this.confirm_dialog.title = 'Confirm Delete'
+      this.confirm_dialog.text = `You are about to remove condidate ${asp.first_name}`
+      this.confirm_dialog.btn_reject_color = 'green-darken-1'
+      this.confirm_dialog.btn_resolve_color = 'red'
+      this.confirm_dialog.btn_resolve_text = 'delete'
+      this.confirm_dialog.cb = this.delete_aspirant
+      this.confirm_dialog.cb_arg = asp
+    },
     async delete_office(offc) {
       const res = await fetch("http://127.0.0.1:500/admin/delete-office/" + offc._id, {
         method: 'DELETE'
@@ -220,8 +261,8 @@ export default {
       this.init_office_ = offc
       this.update_office_dialog = true
 
-    },
-    async delete_aspirant(asp) {
+    }
+    , async delete_aspirant(asp) {
       const res = await fetch("http://127.0.0.1:500/admin/delete-aspirant/" + asp._id, {
         method: 'DELETE'
       })
@@ -238,20 +279,58 @@ export default {
       // console.log(this.initial_asp_form_data)
       this.update_aspirant_dialog = true
 
-    },
-    async fetch_tokens(){
+    }
+    , async fetch_tokens() {
       try {
         const fetch_tokens = await fetch("http://127.0.0.1:500/admin/fetch-tokens/")
         const result = await fetch_tokens.json()
         if (result.ok) {
-          for(let token of result.tokens) {
+          for (let token of result.tokens) {
             token.isUsed = token.isUsed ? 'Not available' : 'Available'
           };
           this.tokens = result.tokens
         }
       } catch (e) {
         console.log(e);
-      }      
+      }
+    }
+    , async toggle_election() {
+      this.confirm_dialog.show = true
+      this.confirm_dialog.btn_resolve_text = 'continue'
+      if (this.toggleElection) {
+
+        this.confirm_dialog.title = 'End Election ?'
+        this.confirm_dialog.text = `You are about to end voting process`
+        this.confirm_dialog.cb = this.stop_election
+      } else {
+
+        this.confirm_dialog.title = 'Start Election ?'
+        this.confirm_dialog.text = `You are about to commence voting process`
+        this.confirm_dialog.cb = this.start_election
+      }
+    },
+    handleResolved(callback,arg){
+      callback(arg)
+    },
+    async stop_election(){
+      const res = await fetch("http://127.0.0.1:500/admin/end-voting/",{method:'PUT'})
+      const result = await res.json()
+      if (result.ok) {
+
+        this.snackbar.show = true
+        this.snackbar.text = result.msg
+        this.toggleElection = false
+      }
+    },
+    async start_election(){
+      const res = await fetch("http://127.0.0.1:500/admin/commence-voting/",{method:'PUT'})
+      const result = await res.json()
+      if (result.ok) {
+
+        this.snackbar.show = true
+        this.snackbar.text = result.msg
+        this.toggleElection = true
+      }
     }
   }
   , async mounted() {
@@ -266,14 +345,24 @@ export default {
     }
 
     try {
-      const fetch_aspirants = await fetch("http://127.0.0.1:500/api/fetch-aspirants/")
+      const fetch_aspirants = await fetch("http://127.0.0.1:500/admin/fetch-aspirants/")
       const result = await fetch_aspirants.json()
       if (result.ok) {
-      	for (let asp of result.aspirants) {
-      		asp.office = this.offices.filter(o => o.id == asp.office_id)[0] || {name:'--deleted--', id:0}
-      	}
-      	// console.log(result.aspirants)
+        for (let asp of result.aspirants) {
+          asp.office = this.offices.filter(o => o.id == asp.office_id)[0] || { name: '--deleted--', id: 0 }
+        }
+        // console.log(result.aspirants)
         this.aspirants = result.aspirants
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      const fetch_election_status = await fetch("http://127.0.0.1:500/admin/election-status")
+      const result = await fetch_election_status.json()
+      if (result.ok) {
+        this.toggleElection = result.status
       }
     } catch (e) {
       console.log(e);
@@ -283,7 +372,7 @@ export default {
       const fetch_voters = await fetch("http://127.0.0.1:500/admin/fetch-voters/")
       const result = await fetch_voters.json()
       if (result.ok) {
-        for(let voter of result.voters) {
+        for (let voter of result.voters) {
           voter.voted = voter.voted ? 'Has voted' : 'Has not voted'
         };
         // console.log(result.aspirants)
@@ -292,8 +381,14 @@ export default {
     } catch (e) {
       console.log(e);
     }
-
-
   }
 }
+/*document.querySelector('.v-input__append').classList.add('pa-0','inline-block','align-self-center')*/
 </script>
+<style>
+  .v-input__append:has( .badge-dot) :{
+    display: inline-block;
+    align-self: center;
+    padding: 0;
+  }
+</style>

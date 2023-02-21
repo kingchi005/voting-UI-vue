@@ -205,7 +205,7 @@ export default {
     this.department = this.updateForm ? this.initial_asp_form_data.department : ''
     this.office = this.updateForm ? this.initial_asp_form_data.office : this.office
     // this.avatar = this.type == "updateForm" ? this.avatar : ''
-    try {
+/*    try {
       const res = await fetch("http://127.0.0.1:500/admin/fetch-office/")
       const result = await res.json()
       if (result?.ok) {
@@ -217,7 +217,7 @@ export default {
       this.alert_msgs = [e.message]
       console.error("error:",e.message);
     }
-
+*/
   }
   , computed() {
     // console.log(this.type)
