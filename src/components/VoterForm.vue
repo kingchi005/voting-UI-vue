@@ -14,8 +14,20 @@
             <div v-for="(item, i) in alert_msgs" :key="i">{{item}}</div>
           </v-alert>
           <v-text-field v-model="tempVoterRegNo" @keyup.alt="addVoter" label="Reg numbers"></v-text-field>
-          <v-btn color="info" size="x-small"> fill </v-btn>
-          <div>Voters: {{reg_nos}}</div>
+          <v-btn @click="fill" color="info" size="x-small"> fill </v-btn>
+          <div>Voters:</div>
+          <div class="overflow-x-auto">
+            <v-chip
+              v-if="reg_nos"
+              v-for="no in reg_nos"
+              class="ma-2"
+              closable
+              @click:close="close_chip(no)"
+            >
+              {{no}}
+            </v-chip>
+            
+          </div>
           <!-- <div v-for="no in reg_nos" :key="reg_nos"> {{no}} </div> -->
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -33,7 +45,7 @@
   </v-dialog>
 </template>
 <script>
-import { onMounted } from 'vue'
+import axios from 'axios'
 
 export default {
   props: {
@@ -59,7 +71,8 @@ export default {
       this.alert_msgs = []
       // console.log(this.$refs.form)
       // if (!this.$refs.form.validate()) return false
-      if (this.$refs.form.validate()) {
+      const { valid } = await this.$refs.form.validate()
+      if (valid) {
         const req = {
           reg_nos: this.reg_nos
         }
@@ -68,14 +81,7 @@ export default {
         async function create_voters(_this) {
 
           try {
-            const res = await fetch("http://127.0.0.1:500/admin/register-voters", {
-              method: "POST"
-              , body: JSON.stringify(req)
-              , headers: {
-                "content-Type": "application/json"
-              }
-            })
-            const result = await res.json()
+            const result = await (await axios.post("/admin/register-voters",req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.voter_dialog = false
@@ -111,6 +117,19 @@ export default {
       }else{
         this.tempVoterRegNo = ''
       }
+    },
+    fill(){
+      let temp_reg_no = this.tempVoterRegNo.split(',')
+      let temp_reg_nos = []
+      for (var i = 0; i < temp_reg_no.length; i++) {
+        if (this.reg_nos.includes(temp_reg_no[i]) || isNaN(temp_reg_no[i]) || temp_reg_no[i] == '') continue
+        this.reg_nos.push(temp_reg_no[i])
+      }
+      this.tempVoterRegNo = ''
+    },
+    close_chip(item){
+      this.reg_nos = this.reg_nos.filter(el=>el != item)
+      console.log(this.reg_nos)
     }
   }
   , async mounted() {

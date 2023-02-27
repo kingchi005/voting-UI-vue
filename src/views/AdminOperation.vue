@@ -24,6 +24,7 @@
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
       <v-row>
+        <!-- {{user}} -->
         OFFICES
         <v-spacer></v-spacer>
         <OfficeForm :offices="offices" :snackbar="snackbar" />
@@ -149,11 +150,16 @@ import OfficeForm from '../components/OfficeForm.vue'
 import VoterForm from '../components/VoterForm.vue'
 import AlertSuccuss from '../components/AlertSuccuss.vue'
 import ConfirmDialogue from '../components/ConfirmDialogue.vue'
+import axios from 'axios'
+// import User from '../router/User.js'
 
 
 export default {
   components: { OfficeForm, AlertSuccuss, AspirantForm, VoterForm, ConfirmDialogue },
-  props:[]
+  name:'Admin Operation',
+  props:{
+    // user:{type:String, required:true}
+  }
   , data() {
     return {
       search: ''
@@ -176,7 +182,8 @@ export default {
       , update_office_dialog: false
       , create_office_dialog: false
       , update_aspirant_dialog: false
-      , create_aspirant_dialog: false
+      , create_aspirant_dialog: false,
+      authHeader:{Authorization:`Bearer ${sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')}` }
       , init_office_: { "id": 1, "_id": "039174dd9b734d714", "name": "This is it", "deleted_flag": false, "createdAt": "2023-02-06T20:09:58.000Z", "updatedAt": "2023-02-16T14:51:54.000Z" }
       , initial_asp_form_data: {}
       , itemsPerPage: 5
@@ -226,13 +233,13 @@ export default {
         */
       ]
       , aspirants: [
-        /*        {"id": 3, "_id": "02704baf09338f8e5", "first_name": "Amanda", "other_names": "baby", "department": "Beauty department", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:11:47.000Z", "updatedAt": "2023-02-15T16:15:57.000Z", "office_id": 11 },
-                {"id": 11, "_id": "0b0f0ed25c455b79b", "first_name": "Kingi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:24:39.000Z", "updatedAt": "2023-02-06T20:24:39.000Z", "office_id": 1 },
-                {"id": 13, "_id": "05452b37d4ecd1e58", "first_name": "Okay", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:25:17.000Z", "updatedAt": "2023-02-06T20:25:17.000Z", "office_id": 3 },
-                {"id": 14, "_id": "0680b43f8f536deb0", "first_name": "Kingchi", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T11:15:37.000Z", "updatedAt": "2023-02-07T11:15:37.000Z", "office_id": 1 },
-                {"id": 22, "_id": "049edc9d31cffb09b", "first_name": "Kingch", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:42:13.000Z", "updatedAt": "2023-02-07T16:42:13.000Z", "office_id": 1 },
-                {"id": 25, "_id": "0e33a064b718eac3f", "first_name": "Kingc", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:44:48.000Z", "updatedAt": "2023-02-07T16:44:48.000Z", "office_id": 1 },
-                {"id": 28, "_id": "031afe41fb28fb89b", "first_name": "Kin", "other_names": "Eze", "department": "IFT", "avatar": "http://127.0.0.1:500/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:45:23.000Z", "updatedAt": "2023-02-07T16:45:23.000Z", "office_id": 1 },
+        /*        {"id": 3, "_id": "02704baf09338f8e5", "first_name": "Amanda", "other_names": "baby", "department": "Beauty department", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:11:47.000Z", "updatedAt": "2023-02-15T16:15:57.000Z", "office_id": 11 },
+                {"id": 11, "_id": "0b0f0ed25c455b79b", "first_name": "Kingi", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:24:39.000Z", "updatedAt": "2023-02-06T20:24:39.000Z", "office_id": 1 },
+                {"id": 13, "_id": "05452b37d4ecd1e58", "first_name": "Okay", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-06T20:25:17.000Z", "updatedAt": "2023-02-06T20:25:17.000Z", "office_id": 3 },
+                {"id": 14, "_id": "0680b43f8f536deb0", "first_name": "Kingchi", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T11:15:37.000Z", "updatedAt": "2023-02-07T11:15:37.000Z", "office_id": 1 },
+                {"id": 22, "_id": "049edc9d31cffb09b", "first_name": "Kingch", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:42:13.000Z", "updatedAt": "2023-02-07T16:42:13.000Z", "office_id": 1 },
+                {"id": 25, "_id": "0e33a064b718eac3f", "first_name": "Kingc", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:44:48.000Z", "updatedAt": "2023-02-07T16:44:48.000Z", "office_id": 1 },
+                {"id": 28, "_id": "031afe41fb28fb89b", "first_name": "Kin", "other_names": "Eze", "department": "IFT", "avatar": "/Emmanuel.jpg", "deleted_flag": false, "createdAt": "2023-02-07T16:45:23.000Z", "updatedAt": "2023-02-07T16:45:23.000Z", "office_id": 1 },
         */
       ]
     }
@@ -259,14 +266,11 @@ export default {
       this.confirm_dialog.cb_arg = asp
     },
     async delete_office(offc) {
-      const res = await fetch("http://127.0.0.1:500/admin/delete-office/" + offc._id, {
-        method: 'DELETE'
-      })
-      const deleted = await res.json()
-      // console.log(deleted)
-      if (deleted.ok) {
+      const deleted_office = await (await axios.delete("/admin/delete-office/" + offc._id)).data
+      // console.log(deleted_office)
+      if (deleted_office.ok) {
         this.snackbar['show'] = true
-        this.snackbar['text'] = deleted.msg
+        this.snackbar['text'] = deleted_office.msg
         this.offices = this.offices.filter(o => o._id !== offc._id)
       }
     }
@@ -276,14 +280,11 @@ export default {
 
     }
     , async delete_aspirant(asp) {
-      const res = await fetch("http://127.0.0.1:500/admin/delete-aspirant/" + asp._id, {
-        method: 'DELETE'
-      })
-      const deleted = await res.json()
-      // console.log(deleted)
-      if (deleted.ok) {
+      const deleted_asp = await (await axios.delete("/admin/delete-aspirant/" + asp._id)).data
+      // console.log(deleted_asp)
+      if (deleted_asp.ok) {
         this.snackbar['show'] = true
-        this.snackbar['text'] = deleted.msg
+        this.snackbar['text'] = deleted_asp.msg
         this.aspirants = this.aspirants.filter(o => o._id !== asp._id)
       }
     }
@@ -295,13 +296,12 @@ export default {
     }
     , async fetch_tokens() {
       try {
-        const fetch_tokens = await fetch("http://127.0.0.1:500/admin/fetch-tokens/")
-        const result = await fetch_tokens.json()
-        if (result.ok) {
-          for (let token of result.tokens) {
+        const fetch_tokens = await (await axios.get("/admin/fetch-tokens/")).data
+        if (fetch_tokens.ok) {
+          for (let token of fetch_tokens.tokens) {
             token.isUsed = token.isUsed ? 'Not available' : 'Available'
           };
-          this.tokens = result.tokens
+          this.tokens = fetch_tokens.tokens
         }
       } catch (e) {
         console.log(e);
@@ -326,8 +326,7 @@ export default {
       callback(arg)
     },
     async stop_election(){
-      const res = await fetch("http://127.0.0.1:500/admin/end-voting/",{method:'PUT'})
-      const result = await res.json()
+      const result = await (await axios.put("/admin/end-voting/")).data
       if (result.ok) {
 
         this.snackbar.show = true
@@ -336,8 +335,7 @@ export default {
       }
     },
     async start_election(){
-      const res = await fetch("http://127.0.0.1:500/admin/commence-voting/",{method:'PUT'})
-      const result = await res.json()
+      const result = await (await axios.put("/admin/commence-voting/")).data
       if (result.ok) {
 
         this.snackbar.show = true
@@ -346,50 +344,47 @@ export default {
       }
     }
   }
-  , async mounted() {
+  , async created() {
     try {
-      const fetch_offices = await fetch("http://127.0.0.1:500/admin/fetch-office/")
-      const result = await fetch_offices.json()
-      if (result.ok) {
-        this.offices = result.offices
+      const fetch_offices = await (await axios.get("/admin/fetch-office/")).data
+      // if (fetch_offices.not_logged_in) return this.$router.push({name:'Login'})
+      if (fetch_offices.ok) {
+        this.offices = fetch_offices.offices
       }
     } catch (e) {
       console.log(e);
     }
 
     try {
-      const fetch_aspirants = await fetch("http://127.0.0.1:500/admin/fetch-aspirants/")
-      const result = await fetch_aspirants.json()
-      if (result.ok) {
-        for (let asp of result.aspirants) {
+      const fetch_aspirants = await (await axios.get("/admin/fetch-aspirants/")).data
+      if (fetch_aspirants.ok) {
+        for (let asp of fetch_aspirants.aspirants) {
           asp.office = this.offices.filter(o => o.id == asp.office_id)[0] || { name: '--deleted--', id: 0 }
         }
-        // console.log(result.aspirants)
-        this.aspirants = result.aspirants
+        // console.log(fetch_aspirants.aspirants)
+        this.aspirants = fetch_aspirants.aspirants
       }
     } catch (e) {
       console.log(e);
     }
 
     try {
-      const fetch_election_status = await fetch("http://127.0.0.1:500/admin/election-status")
-      const result = await fetch_election_status.json()
-      if (result.ok) {
-        this.toggleElection = result.status
+      const fetch_election_status = await (await axios.get("/admin/election-status")).data
+      if (fetch_election_status.ok) {
+        this.toggleElection = fetch_election_status.status
       }
     } catch (e) {
       console.log(e);
     }
 
     try {
-      const fetch_voters = await fetch("http://127.0.0.1:500/admin/fetch-voters/")
-      const result = await fetch_voters.json()
-      if (result.ok) {
-        for (let voter of result.voters) {
+      const fetch_voters = await (await axios.get("/admin/fetch-voters/")).data
+      if (fetch_voters.ok) {
+        for (let voter of fetch_voters.voters) {
           voter.voted = voter.voted ? 'Has voted' : 'Has not voted'
         };
-        // console.log(result.aspirants)
-        this.voters = result.voters
+        // console.log(fetch_voters.aspirants)
+        this.voters = fetch_voters.voters
       }
     } catch (e) {
       console.log(e);

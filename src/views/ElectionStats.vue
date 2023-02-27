@@ -58,6 +58,8 @@
 
 </template>
 <script>
+  import axios from 'axios'
+
   export default {
     data:()=>({
       loading:false,
@@ -76,6 +78,23 @@
       ],
       election_stats:[]
     }),
+    methods:{
+      async fetch_result(){
+        const fetch_el_stat = await (await axios.get("/admin/fetch-result/")).data
+        if (fetch_el_stat.ok) {
+          let el_stat = fetch_el_stat.election_result.votes
+          let arr = []
+          for(let items of el_stat) {
+            for(let item of items.aspirants) {
+              arr.push(item)
+            };
+          }
+          this.election_stats = arr
+          arr = []
+          // console.log(this.election_stats)
+        }
+      }
+    },
     async mounted(){
       const el_stat = [
         {
@@ -143,18 +162,9 @@
       ]
 
       try {
-        const fetch_el_stat = await fetch("http://127.0.0.1:500/admin/fetch-result/")
-        const result = await fetch_el_stat.json()
-        if (result.ok) {
-          let el_stat = result.election_result.votes
-          for(let items of el_stat) {
-            for(let item of items.aspirants) {
-              this.election_stats.push(item)
-            };
-          }
-          // console.log(this.election_stats)
-        }
+        // const fetch_int = setInterval(this.fetch_result,5000)
       } catch (e) {
+        clearInterval(fetch_int)
         console.log(e);
       }
     }

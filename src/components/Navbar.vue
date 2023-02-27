@@ -22,6 +22,7 @@ export default {
        // { icon: "mdi-home", text: 'About', route: '/about' }
       { icon: "mdi-view-dashboard", text: 'Admin Operation', route: '/operation' }
       , { icon: "mdi-sign-real-estate", text: 'Statistics', route: '/election-stat' }
+      // , { icon: "mdi-export", text: 'Login', route: '/' }
       // , { icon: "folder", text: 'About', route: '/about' }
       // ,{icon:"dashboard",text:'Dashboard', route:'/'}
       // ,{icon:"dashboard",text:'Dashboard', route:'/'}

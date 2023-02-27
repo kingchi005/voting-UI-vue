@@ -42,6 +42,7 @@
 </template>
 <script>
 import { onMounted } from 'vue'
+import axios from 'axios'
 export default {
   // props: ["type","first_name" ,"other_names","department","avatar","office"]
   props:{
@@ -113,14 +114,7 @@ export default {
         }
         async function create_aspirant(_this) {
           try {
-            const res = await fetch("http://127.0.0.1:500/admin/create-aspirant", {
-              method: "POST"
-              , body: JSON.stringify(req)
-              , headers: {
-                "content-Type": "application/json"
-              }
-            })
-            const result = await res.json()
+            const result = await (await axios.post("/admin/create-aspirant",req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.aspirant_dialog = false
@@ -147,14 +141,7 @@ export default {
         }
         async function update_aspirant (_this) {
           try {
-            const res = await fetch("http://127.0.0.1:500/admin/update-aspirant/"+_this.asp_update_id, {
-              method: "PATCH"
-              , body: JSON.stringify(req)
-              , headers: {
-                "content-Type": "application/json"
-              }
-            })
-            const result = await res.json()
+            const result = await (await axios.patch("/admin/update-aspirant/"+_this.asp_update_id,req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.snackbar['show'] = true
@@ -213,25 +200,8 @@ export default {
     this.other_names = this.updateForm ? this.initial_asp_form_data.other_names : ''
     this.department = this.updateForm ? this.initial_asp_form_data.department : ''
     this.office = this.updateForm ? this.initial_asp_form_data.office : this.office
-    // this.avatar = this.type == "updateForm" ? this.avatar : ''
-/*    try {
-      const res = await fetch("http://127.0.0.1:500/admin/fetch-office/")
-      const result = await res.json()
-      if (result?.ok) {
-        // this.offices = result.offices
-      }
-    } catch(e) {
-      _this.isLoading = false
-      this.alert_type = "warning"
-      this.alert_msgs = [e.message]
-      console.error("error:",e.message);
-    }
-*/
   }
   , computed() {
-    // console.log(this.type)
-    // this.first_name = this.initial_asp_form_data || ''
-    // this.alert_msgs = this.alert_msgs != "" ? "this is it" : ""
   }
 
 }

@@ -39,6 +39,7 @@
 </template>
 <script>
 import { onMounted } from 'vue'
+import axios from 'axios'
 
 export default {
   // props: ["type","name" ,"other_names","department","avatar","office_id"]
@@ -90,14 +91,7 @@ export default {
         async function create_office(_this) {
 
           try {
-            const res = await fetch("http://127.0.0.1:500/admin/create-office", {
-              method: "POST"
-              , body: JSON.stringify(req)
-              , headers: {
-                "content-Type": "application/json"
-              }
-            })
-            const result = await res.json()
+            const result = await (await axios.post("http://127.0.0.1:500/admin/create-office",req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.office_dialog = false
@@ -125,14 +119,7 @@ export default {
         async function update_office(_this) {
           try {
 
-            const res = await fetch("http://127.0.0.1:500/admin/update-office/" + _this.office_update_id, {
-              method: "PATCH"
-              , body: JSON.stringify(req)
-              , headers: {
-                "content-Type": "application/json"
-              }
-            })
-            const result = await res.json()
+            const result = await (await axios.patch("http://127.0.0.1:500/admin/update-office/" + _this.office_update_id,req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.snackbar['show'] = true
