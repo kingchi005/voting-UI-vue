@@ -304,6 +304,11 @@ export default {
           this.tokens = fetch_tokens.tokens
         }
       } catch (e) {
+        if (e.name == 'AxiosError') {
+          this.snackbar.show = true
+          this.snackbar.text = e.response?.data?.msg
+          console.log(e.response?.data)
+        }
         console.log(e);
       }
     }
@@ -352,6 +357,11 @@ export default {
         this.offices = fetch_offices.offices
       }
     } catch (e) {
+      if (e.name == 'AxiosError') {
+        this.snackbar.show = true
+        this.snackbar.text = e.response?.data?.msg
+        console.log(e.response?.data)
+      }
       console.log(e);
     }
 
@@ -365,6 +375,11 @@ export default {
         this.aspirants = fetch_aspirants.aspirants
       }
     } catch (e) {
+      if (e.name == 'AxiosError') {
+        this.snackbar.show = true
+        this.snackbar.text = e.response?.data?.msg
+        console.log(e.response?.data)
+      }
       console.log(e);
     }
 
@@ -374,6 +389,11 @@ export default {
         this.toggleElection = fetch_election_status.status
       }
     } catch (e) {
+      if (e.name == 'AxiosError') {
+        this.snackbar.show = true
+        this.snackbar.text = e.response?.data?.msg
+        console.log(e.response?.data)
+      }
       console.log(e);
     }
 
@@ -387,6 +407,11 @@ export default {
         this.voters = fetch_voters.voters
       }
     } catch (e) {
+      if (e.name == 'AxiosError') {
+        this.snackbar.show = true
+        this.snackbar.text = e.response?.data?.msg
+        console.log(e.response?.data)
+      }
       console.log(e);
     }
   }

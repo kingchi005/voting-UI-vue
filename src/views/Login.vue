@@ -89,6 +89,8 @@ export default {
           this.alert_type = 'success'
           this.alert_msg = result.msg
           sessionStorage.setItem('_x__r_a_y__m_u_m_m_y_',result.token)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')}`
+
           this.$router.push({name:'Admin Operation'})
 
           // this.alert_type = "success"
