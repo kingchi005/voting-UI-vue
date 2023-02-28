@@ -83,22 +83,33 @@ export default {
           pass_name:this.pass_name,
           pass_token:this.pass_token
         }
-        const result = await (await axios.post("/auth/login-admin",req)).data
-        if (result.ok) {
-          this.isLoading = false
-          this.alert_type = 'success'
-          this.alert_msg = result.msg
-          sessionStorage.setItem('_x__r_a_y__m_u_m_m_y_',result.token)
-          axios.defaults.headers.common['Authorization'] = `Bearer ${sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')}`
+        try {
+          const result = await (await axios.post("/auth/login-admin",req)).data
+          if (result.ok) {
+            this.isLoading = false
+            this.alert_type = 'success'
+            this.alert_msg = result.msg
+            sessionStorage.setItem('_x__r_a_y__m_u_m_m_y_',result.token)
+            axios.defaults.headers.common['Authorization'] = `Bearer ${sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')}`
 
-          this.$router.push({name:'Admin Operation'})
+            this.$router.push({name:'Admin Operation'})
 
-          // this.alert_type = "success"
-          // console.log(result)
-        } else {
+            // this.alert_type = "success"
+            // console.log(result)
+          } else {
+            this.isLoading = false
+            this.alert_type = "error"
+            this.alert_msg = result.msg
+          }
+            // statements
+        } catch(e) {
           this.isLoading = false
-          this.alert_type = "error"
-          this.alert_msg = result.msg
+          if (e.name == 'AxiosError') {
+            this.alert_type = "error"
+            this.alert_msg = e.response?.data?.msg
+            console.log(e.response?.data)
+          }
+          console.log(e);
         }
       }
     }

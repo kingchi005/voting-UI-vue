@@ -18,44 +18,17 @@
       <template v-slot:item.avatar="{ item }">
         <v-avatar :image="item.raw.avatar" :alt="item.raw.first_name" size="40"></v-avatar>
       </template>
+      <template v-slot:item.number_of_votes="{ item }">
+        <v-chip
+          class="ma-2"
+          color="primary"
+          text-color="white"
+        >
+          {{item.raw.number_of_votes}}
+        </v-chip>
+      </template>
     </v-data-table>
   </v-card>
-<!--
-  <v-card class="ma-5 pa-5">
-    <v-card-title class="mb-5">
-      <v-row>
-        OFFICES
-        <v-spacer></v-spacer>
-      </v-row>
-      <v-row>
-      </v-row>
-    </v-card-title>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-left">
-            Name
-          </th>
-          <th class="text-right">
-            Action
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in offices" :key="item.name">
-          <td>{{ item.name }}</td>
-          <td class="text-right">
-            <!- <v-btn size="x-small" color="primary mx-3" @click="edit_office(item)"> Edit </v-btn> --
-            <v-btn size="x-small" color="red" @click="handle_delete_office(item)" class="ms-5"> delete </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-card>
--->
-
-
-
 </template>
 <script>
   import axios from 'axios'
@@ -91,6 +64,7 @@
           }
           this.election_stats = arr
           arr = []
+          if (fetch_el_stat.election_started) setTimeout(this.fetch_result, 5000)
           // console.log(this.election_stats)
         }
       }
@@ -163,6 +137,7 @@
 
       try {
         // const fetch_int = setInterval(this.fetch_result,5000)
+        this.fetch_result()
       } catch (e) {
         clearInterval(fetch_int)
         console.log(e);

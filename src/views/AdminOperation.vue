@@ -124,12 +124,29 @@
       <v-row class="text-uppercase">
         Voters
         <v-spacer></v-spacer>
-        <VoterForm :offices="offices" :snackbar="snackbar" />
+        <VoterForm :offices="offices" :voters="voters" :snackbar="snackbar" />
       </v-row>
       <v-row>
       </v-row>
     </v-card-title>
-    <v-data-table v-model:items-per-page="itemsPerPage" :headers="voter_headers" :items="voters" item-value="reg_no" class="elevation-1"></v-data-table>
+      <v-text-field
+        v-model="voter_search"
+        append-icon="mdi-magnify"
+        label="Reg No"
+        single-line
+        hide-details
+      ></v-text-field>
+    <v-data-table v-model:items-per-page="itemsPerPage" :headers="voter_headers" :items="voters" item-value="reg_no" :search="voter_search" class="elevation-1">
+      <template v-slot:item.voted="{ item }">
+        <v-chip
+          class="ma-2"
+          :color="!item.raw.voted ? '' : 'grey'"
+          text-color="white"
+        >
+        {{item.raw.voted ? 'Has voted' : 'Has not voted'}}
+        </v-chip>
+      </template>
+    </v-data-table>
   </v-card>
   <v-card class="ma-5 pa-5">
     <v-card-title class="mb-5">
@@ -141,7 +158,23 @@
       <v-row>
       </v-row>
     </v-card-title>
-    <v-data-table v-model:items-per-page="itemsPerPage" :headers="token_headers" :items="tokens" item-value="" class="elevation-1"></v-data-table>
+        <v-text-field
+          v-model="token_search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+    <v-data-table v-model:items-per-page="itemsPerPage" :headers="token_headers" :items="tokens" item-value="" :search="token_search" class="elevation-1">
+      <template v-slot:item.isUsed="{ item }">
+        <v-chip
+          class="ma-2"
+          :color="!item.raw.isUsed ? '' : 'grey'"
+        >
+        {{item.raw.isUsed ? 'Not available' : 'Available'}}
+        </v-chip>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 <script>
@@ -162,11 +195,13 @@ export default {
   }
   , data() {
     return {
-      search: ''
+      token_search: '',
+      voter_search: ''
       , toggleElection: true
       , snackbar: {
         show: false
         , text: 'sample bar'
+        , color: 'green'
       }
       , test_dialog: 'this is text dialog'
       , confirm_dialog: {
@@ -299,7 +334,6 @@ export default {
         const fetch_tokens = await (await axios.get("/admin/fetch-tokens/")).data
         if (fetch_tokens.ok) {
           for (let token of fetch_tokens.tokens) {
-            token.isUsed = token.isUsed ? 'Not available' : 'Available'
           };
           this.tokens = fetch_tokens.tokens
         }
@@ -333,7 +367,6 @@ export default {
     async stop_election(){
       const result = await (await axios.put("/admin/end-voting/")).data
       if (result.ok) {
-
         this.snackbar.show = true
         this.snackbar.text = result.msg
         this.toggleElection = false
@@ -360,6 +393,7 @@ export default {
       if (e.name == 'AxiosError') {
         this.snackbar.show = true
         this.snackbar.text = e.response?.data?.msg
+        this.snackbar.color = 'red'
         console.log(e.response?.data)
       }
       console.log(e);
@@ -401,7 +435,6 @@ export default {
       const fetch_voters = await (await axios.get("/admin/fetch-voters/")).data
       if (fetch_voters.ok) {
         for (let voter of fetch_voters.voters) {
-          voter.voted = voter.voted ? 'Has voted' : 'Has not voted'
         };
         // console.log(fetch_voters.aspirants)
         this.voters = fetch_voters.voters
@@ -414,6 +447,9 @@ export default {
       }
       console.log(e);
     }
+  },
+  mounted(){
+    if (!sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')) this.$router.push({name:'Login'})
   }
 }
 /*document.querySelector('.v-input__append').classList.add('pa-0','inline-block','align-self-center')*/

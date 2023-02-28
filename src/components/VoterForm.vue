@@ -52,6 +52,9 @@ export default {
     snackbar: {
       type: Object
     },
+    voters:{
+      type:Object
+    }
   }
   , data: () => ({
     isLoading: false
@@ -88,7 +91,14 @@ export default {
               _this.snackbar['show'] = true
               _this.snackbar['text'] = result.msg
               _this.reg_nos = []
-              _this.voters.push(result.voter)
+              for(let item of result.voters) {
+
+                _this.voters.push({
+                  reg_no:item.reg_no,
+                  _id:item._id,
+                  voted:item.voted,
+                })
+              };
               // _this.alert_type = "success"
               // console.log(result)
             } else {
@@ -133,6 +143,7 @@ export default {
     }
   }
   , async mounted() {
+    console.log(this.voters)
   }
   , computed: {
   }

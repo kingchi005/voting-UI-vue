@@ -153,6 +153,7 @@ export default {
                   asp.other_names = req.other_names
                   asp.department = req.department
                   asp.office = _this.office
+                  asp.avatar = _this.avatar
                 }
               });
 

@@ -3,7 +3,7 @@
     <v-snackbar
       v-model="snackbar['show']"
       :timeout="5000"
-      color="green"
+      :color="snackbar.color"
       location="top"
 
     >
@@ -27,6 +27,6 @@
       snackbar:{
         type:Object
       }
-    }
+    },
   }
 </script>

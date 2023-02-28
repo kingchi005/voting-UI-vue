@@ -18,6 +18,8 @@ import { mdi } from 'vuetify/iconsets/mdi'
 import axios from 'axios'
 
 axios.defaults.baseURL = 'http://127.0.0.1:500';
+axios.defaults.headers.common['Authorization'] = !sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_') || `Bearer ${sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_')}`
+
 
 // console.log(md,fa)
 

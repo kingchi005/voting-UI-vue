@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 // import User from './User.js'
 
-const userAuthorised = () => (sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_') !== '')
+const userAuthorised = () => (sessionStorage.getItem('_x__r_a_y__m_u_m_m_y_'))
 
 const router = createRouter({
   history: createWebHistory(
