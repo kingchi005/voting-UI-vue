@@ -3,7 +3,7 @@
     <!-- <v-img
       class="mx-auto mb-10"
       max-width="228"
-      src="http://127.0.0.1:500/Emmanuel.jpg"
+      src="/Emmanuel.jpg"
     ></v-img> -->
 
     <v-card

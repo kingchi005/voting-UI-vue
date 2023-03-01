@@ -91,7 +91,7 @@ export default {
         async function create_office(_this) {
 
           try {
-            const result = await (await axios.post("http://127.0.0.1:500/admin/create-office",req)).data
+            const result = await (await axios.post("/admin/create-office",req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.office_dialog = false
@@ -119,7 +119,7 @@ export default {
         async function update_office(_this) {
           try {
 
-            const result = await (await axios.patch("http://127.0.0.1:500/admin/update-office/" + _this.office_update_id,req)).data
+            const result = await (await axios.patch("/admin/update-office/" + _this.office_update_id,req)).data
             if (result.ok) {
               _this.isLoading = false
               _this.snackbar['show'] = true
