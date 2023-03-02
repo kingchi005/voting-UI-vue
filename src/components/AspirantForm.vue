@@ -123,6 +123,8 @@ export default {
               _this.first_name = ''
               _this.other_names = ''
               _this.department = ''
+              result.aspirant.office = _this.offices.filter(o => o.id == result.aspirant.office_id)[0] || { name: '--deleted--', id: 0 }
+              console.log(result.aspirant)
               _this.aspirants.push(result.aspirant)
             } else {
               _this.isLoading = false

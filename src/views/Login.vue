@@ -106,7 +106,7 @@ export default {
           this.isLoading = false
           if (e.name == 'AxiosError') {
             this.alert_type = "error"
-            this.alert_msg = e.response?.data?.msg
+            this.alert_msg = e.response ? e.response?.data?.msg : e.message
             console.log(e.response?.data)
           }
           console.log(e);
